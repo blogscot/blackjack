@@ -45,11 +45,9 @@ var (
 	cards   = deck.New()
 )
 
-func init() {
-	cards.Shuffle()
-}
-
 func startGame() {
+	cards.Shuffle()
+
 	for n := 1; n <= 2; n++ {
 		for _, p := range players {
 			c := dealCard()
@@ -61,13 +59,6 @@ func startGame() {
 func dealCard() (card deck.Card) {
 	card = cards[0]
 	cards = cards[1:]
-	return
-}
-
-func (p Player) score() (total int) {
-	for _, c := range p.cards {
-		total += scoreCard(c)
-	}
 	return
 }
 
@@ -86,8 +77,19 @@ func (d *Dealer) takeCard(c deck.Card) {
 	}
 }
 
+func (p Player) score() (total int) {
+	for _, c := range p.cards {
+		total += scoreCard(c)
+	}
+	return
+}
+
 func (d Dealer) score() (total int) {
 	return d.Player.score() + scoreCard(d.faceDown)
+}
+
+func isBust(s Scoring) bool {
+	return s.score() > 21
 }
 
 func scoreCard(c deck.Card) (score int) {
@@ -151,4 +153,22 @@ func playerChoice() choice {
 		return hit
 	}
 	return stand
+}
+
+func play(p Scoring) {
+	giveMe := true
+
+	for giveMe {
+		if playerChoice() == hit {
+			p.takeCard(dealCard())
+			if isBust(p) {
+				fmt.Println("You're BUST!")
+				os.Exit(0)
+			}
+			gameStatus()
+		} else {
+			giveMe = false
+		}
+	}
+
 }

@@ -6,16 +6,13 @@ import (
 
 func main() {
 
-	fmt.Println("Let's play BlackJack!")
-	fmt.Println("\nThe dealer shuffles the deck thoroughly then startings dealing...\n")
+	fmt.Println("Let's play BlackJack!\n")
+	fmt.Println("The dealer shuffles the deck thoroughly then startings dealing...\n")
 	startGame()
 
 	gameStatus()
 
 	p := players[0]
-	if playerChoice() == hit {
-		p.takeCard(dealCard())
-	}
-	gameStatus()
+	play(p)
 
 }
