@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 	"strings"
 
 	"github.com/blogscot/deck"
@@ -14,6 +15,7 @@ import (
 type Scoring interface {
 	score() int
 	takeCard(c deck.Card)
+	getName() string
 }
 
 // Player ...
@@ -61,6 +63,10 @@ func dealCard() (card deck.Card) {
 	card = cards[0]
 	cards = cards[1:]
 	return
+}
+
+func (p *Player) getName() string {
+	return p.name
 }
 
 func (p *Player) takeCard(c deck.Card) {
@@ -177,6 +183,7 @@ func handleDealer(d *Dealer) {
 			os.Exit(0)
 		}
 	}
+	d.total = d.score()
 	showHands(true)
 }
 
@@ -195,5 +202,12 @@ func handlePlayer(p *Player) {
 			giveMe = false
 		}
 	}
+	p.total = p.score()
+}
 
+func decideWinner(s []Scoring) string {
+	sort.Slice(s, func(i, j int) bool {
+		return s[i].score() > s[j].score()
+	})
+	return s[0].getName()
 }
