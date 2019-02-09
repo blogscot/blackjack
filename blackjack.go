@@ -54,6 +54,7 @@ func startGame() {
 			p.takeCard(c)
 		}
 	}
+	showHands(false)
 }
 
 func dealCard() (card deck.Card) {
@@ -126,13 +127,17 @@ func scoreCard(c deck.Card) (score int) {
 	return
 }
 
-func gameStatus() {
+func showHands(showAll bool) {
 	fmt.Println("\nYou have:")
 	deck.Show(player1.cards)
 
 	fmt.Println("\nThe dealer has:")
 	deck.Show(dealer.cards)
-	fmt.Print("and a card face down.\n")
+	if showAll {
+		deck.Show([]deck.Card{dealer.faceDown})
+	} else {
+		fmt.Print("and a card face down.\n")
+	}
 }
 
 func playerChoice() choice {
@@ -155,17 +160,37 @@ func playerChoice() choice {
 	return stand
 }
 
-func play(p Scoring) {
+func play(s *Scoring) {
+	switch p := (*s).(type) {
+	case *Player:
+		handlePlayer(p)
+	case *Dealer:
+		handleDealer(p)
+	}
+}
+
+func handleDealer(d *Dealer) {
+	for d.score() < 16 {
+		d.takeCard(dealCard())
+		if isBust(d) {
+			fmt.Println("\nThe dealer is BUST. You win!")
+			os.Exit(0)
+		}
+	}
+	showHands(true)
+}
+
+func handlePlayer(p *Player) {
 	giveMe := true
 
 	for giveMe {
 		if playerChoice() == hit {
 			p.takeCard(dealCard())
 			if isBust(p) {
-				fmt.Println("You're BUST!")
+				fmt.Println("\nYou're BUST!")
 				os.Exit(0)
 			}
-			gameStatus()
+			showHands(false)
 		} else {
 			giveMe = false
 		}
