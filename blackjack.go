@@ -25,7 +25,7 @@ type Player struct {
 	total int
 }
 
-// Dealer ...
+// Dealer behaves like a player but keeps one card hidden
 type Dealer struct {
 	Player
 	faceDown deck.Card
@@ -36,7 +36,15 @@ type choice int
 const (
 	hit = iota
 	stand
-	pageBreak = "=================================\n"
+	pageBreak    = "=================================\n"
+	dealerIsBust = `
+++++++++++++++++++++++++++++
+The dealer is BUST. You win!
+++++++++++++++++++++++++++++`
+	playerIsBust = `
+++++++++++++
+You're BUST!
+++++++++++++`
 )
 
 var (
@@ -216,7 +224,7 @@ func handleDealer(d *Dealer) {
 	for score < 16 || hasSoft17 {
 		d.takeCard(dealCard())
 		if isBust(d) {
-			fmt.Println("\nThe dealer is BUST. You win!")
+			fmt.Println(dealerIsBust)
 			os.Exit(0)
 		}
 	}
@@ -231,7 +239,7 @@ func handlePlayer(p *Player) {
 		if playerChoice() == hit {
 			p.takeCard(dealCard())
 			if isBust(p) {
-				fmt.Println("\nYou're BUST!")
+				fmt.Println(playerIsBust)
 				os.Exit(0)
 			}
 			showHands(false)
