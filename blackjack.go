@@ -36,6 +36,7 @@ type choice int
 const (
 	hit = iota
 	stand
+	pageBreak = "=================================\n"
 )
 
 var (
@@ -95,10 +96,6 @@ func (d Dealer) score() (total int) {
 	return d.Player.score() + scoreCard(d.faceDown)
 }
 
-func isBust(s Scoring) bool {
-	return s.score() > 21
-}
-
 func scoreCard(c deck.Card) (score int) {
 	switch c.Value {
 	case deck.Ace:
@@ -134,16 +131,34 @@ func scoreCard(c deck.Card) (score int) {
 }
 
 func showHands(showAll bool) {
-	fmt.Println("\nYou have:")
-	deck.Show(player1.cards)
+	fmt.Print(pageBreak)
+	fmt.Print("You have: ")
+	fmt.Printf("%s.", showHand(&player1, false))
 
-	fmt.Println("\nThe dealer has:")
-	deck.Show(dealer.cards)
-	if showAll {
-		deck.Show([]deck.Card{dealer.faceDown})
-	} else {
-		fmt.Print("and a card face down.\n")
+	fmt.Print("\nThe dealer has: ")
+	fmt.Printf("%s.\n", showHand(&dealer, showAll))
+}
+
+func showHand(s Scoring, showAll bool) string {
+	arr := []string{}
+
+	switch s.(type) {
+	case *Player:
+		for _, card := range player1.cards {
+			arr = append(arr, card.String())
+		}
+	case *Dealer:
+		for _, card := range dealer.cards {
+			arr = append(arr, card.String())
+		}
+		if showAll {
+			arr = append(arr, dealer.faceDown.String())
+		} else {
+			arr = append(arr, "and a card face down")
+		}
 	}
+
+	return strings.Join(arr, ", ")
 }
 
 func playerChoice() choice {
@@ -153,6 +168,7 @@ func playerChoice() choice {
 	)
 
 	for !isValid {
+		fmt.Print(pageBreak)
 		fmt.Print("Do you want to (H)it or (S)tand? ")
 		text, _ = reader.ReadString('\n')
 		text = strings.TrimRight(strings.ToLower(text), "\n")
@@ -166,6 +182,10 @@ func playerChoice() choice {
 	return stand
 }
 
+func isBust(s Scoring) bool {
+	return s.score() > 21
+}
+
 func play(s *Scoring) {
 	switch p := (*s).(type) {
 	case *Player:
@@ -175,8 +195,25 @@ func play(s *Scoring) {
 	}
 }
 
+func hasAce(cs []deck.Card) bool {
+	for _, c := range cs {
+		if c.Value == deck.Ace {
+			return true
+		}
+	}
+	return false
+}
+
 func handleDealer(d *Dealer) {
-	for d.score() < 16 {
+	showHands(true)
+
+	score := d.score()
+	hasSoft17 := score == 7 && hasAce(d.cards)
+	if hasSoft17 {
+		fmt.Println("The dealer has a soft 17.")
+	}
+
+	for score < 16 || hasSoft17 {
 		d.takeCard(dealCard())
 		if isBust(d) {
 			fmt.Println("\nThe dealer is BUST. You win!")
@@ -209,5 +246,8 @@ func decideWinner(s []Scoring) string {
 	sort.Slice(s, func(i, j int) bool {
 		return s[i].score() > s[j].score()
 	})
-	return s[0].getName()
+	if s[0].score() != s[1].score() {
+		return s[0].getName()
+	}
+	return dealer.name
 }
