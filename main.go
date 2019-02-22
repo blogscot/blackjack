@@ -9,12 +9,13 @@ func main() {
 	fmt.Println("The dealer shuffles the deck thoroughly then starts dealing...\n")
 	startGame()
 
-	ps := players[:len(players)-1]
+	justPlayersLength := len(players) - 1
+	ps := players[:justPlayersLength]
 	for _, p := range ps {
 		play(&p)
 	}
 
-	d := players[len(players)-1]
+	d := players[justPlayersLength]
 	play(&d)
 
 	winner := decideWinner(players)
