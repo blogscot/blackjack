@@ -37,6 +37,7 @@ The dealer is BUST. You win!
 ++++++++++++
 You're BUST!
 ++++++++++++`
+	gameIsDrawn = "Draw"
 )
 
 var (
@@ -89,11 +90,31 @@ func (p Player) score() (total int) {
 	for _, c := range p.cards {
 		total += scoreCard(c)
 	}
+	if p.hasAce() && total <= 11 {
+		total += 10
+	}
 	return
 }
 
 func (d Dealer) score() (total int) {
-	return d.Player.score() + scoreCard(d.faceDown)
+	total = d.Player.score() + scoreCard(d.faceDown)
+	if d.hasAce() && total <= 11 {
+		total += 10
+	}
+	return
+}
+
+func (p Player) hasAce() bool {
+	for _, c := range p.cards {
+		if c.Value == deck.Ace {
+			return true
+		}
+	}
+	return false
+}
+
+func (d Dealer) hasAce() bool {
+	return d.Player.hasAce() || d.faceDown.Value == deck.Ace
 }
 
 func scoreCard(c deck.Card) (score int) {
@@ -149,13 +170,4 @@ func playerChoice() choice {
 		return hit
 	}
 	return stand
-}
-
-func hasAce(cs []deck.Card) bool {
-	for _, c := range cs {
-		if c.Value == deck.Ace {
-			return true
-		}
-	}
-	return false
 }

@@ -56,26 +56,31 @@ func play(s *Participant) {
 	case *Player:
 		handlePlayer(p)
 	case *Dealer:
-		handleDealer(p)
+		handleDealer(p, player1.score())
 	}
 }
 
-func handleDealer(d *Dealer) {
+func handleDealer(d *Dealer, playerScore int) {
 	showHands(true)
 
+	// TODO: When deciding whether to continue the dealer needs
+	// to check if aces are low or high.
 	score := d.score()
-	hasSoft17 := score == 7 && hasAce(d.cards)
+	hasSoft17 := score == 7 && d.hasAce()
 	if hasSoft17 {
 		fmt.Println("The dealer has a soft 17.")
 	}
 
-	for score < 16 || hasSoft17 {
+	for score < 16 && score < playerScore || hasSoft17 {
+		fmt.Println("The dealer hits!")
 		d.takeCard(dealCard())
 		if isBust(d) {
 			fmt.Println(dealerIsBust)
 			os.Exit(0)
 		}
 	}
+
+	fmt.Println("The dealer stands.")
 	d.total = d.score()
 	showHands(true)
 }
@@ -105,5 +110,5 @@ func decideWinner(s []Participant) string {
 	if s[0].score() != s[1].score() {
 		return s[0].getName()
 	}
-	return dealer.name
+	return gameIsDrawn
 }

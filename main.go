@@ -5,8 +5,9 @@ import (
 )
 
 func main() {
-	fmt.Println("Let's play BlackJack!\n")
-	fmt.Println("The dealer shuffles the deck thoroughly then starts dealing...\n")
+	fmt.Println("Let's play BlackJack!")
+	fmt.Println("\nThe dealer shuffles the deck thoroughly then starts dealing...")
+	fmt.Println()
 	startGame()
 
 	justPlayersLength := len(players) - 1
@@ -21,6 +22,8 @@ func main() {
 	winner := decideWinner(players)
 	if winner == "You" {
 		fmt.Printf("\n%s win!\n", winner)
+	} else if winner == gameIsDrawn {
+		fmt.Printf("\nThe game is a draw!")
 	} else {
 		fmt.Printf("\n%s wins!\n", winner)
 	}
