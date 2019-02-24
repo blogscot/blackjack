@@ -1,4 +1,5 @@
-package main
+// Package blackjack contains functionality to play the card game Blackjack
+package blackjack
 
 import (
 	"bufio"
@@ -58,8 +59,36 @@ var (
 	cards   *deck.Deck
 )
 
+// Play plays the game
+func Play() {
+	fmt.Println("Let's play BlackJack!")
+	fmt.Println("\nThe dealer shuffles the deck thoroughly then starts dealing...")
+	fmt.Println()
+
+	deck := deck.New()
+	start(&deck)
+
+	justPlayersLength := len(players) - 1
+	ps := players[:justPlayersLength]
+	for _, p := range ps {
+		play(&p)
+	}
+
+	d := players[justPlayersLength]
+	play(&d)
+
+	winner := decideWinner(players)
+	if winner == "You" {
+		fmt.Printf("\n%s win!\n", winner)
+	} else if winner == gameIsDrawn {
+		fmt.Printf("\nThe game is a draw!")
+	} else {
+		fmt.Printf("\n%s wins!\n", winner)
+	}
+}
+
 // Start starts the game
-func Start(pack Pack) {
+func start(pack Pack) {
 	cards = pack.(*deck.Deck)
 	cards.Shuffle()
 
