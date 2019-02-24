@@ -12,7 +12,7 @@ func main() {
 	fmt.Println()
 
 	deck := deck.New()
-	Start(deck)
+	Start(&deck)
 
 	justPlayersLength := len(players) - 1
 	ps := players[:justPlayersLength]

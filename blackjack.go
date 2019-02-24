@@ -10,6 +10,11 @@ import (
 	"github.com/blogscot/deck"
 )
 
+// Pack ...
+type Pack interface {
+	Shuffle()
+}
+
 // Player ...
 type Player struct {
 	name  string
@@ -47,12 +52,12 @@ var (
 	dealer  = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
 	player1 = Player{name: "You"}
 	players = []Participant{&player1, &dealer}
-	cards   deck.Deck
+	cards   *deck.Deck
 )
 
 // Start starts the game
-func Start(deck deck.Deck) {
-	cards = deck
+func Start(pack Pack) {
+	cards = pack.(*deck.Deck)
 	cards.Shuffle()
 
 	for n := 1; n <= 2; n++ {
@@ -65,8 +70,8 @@ func Start(deck deck.Deck) {
 }
 
 func dealCard() (card deck.Card) {
-	card = cards[0]
-	cards = cards[1:]
+	card = (*cards)[0]
+	*cards = (*cards)[1:]
 	return
 }
 
