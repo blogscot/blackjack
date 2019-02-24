@@ -38,7 +38,7 @@ func showHand(s Participant, showAll bool) string {
 			arr = append(arr, card.String())
 		}
 		if showAll {
-			arr = append(arr, dealer.faceDown.String())
+			arr = append(arr, dealer.hiddenCard.String())
 		} else {
 			arr = append(arr, "and a card face down")
 		}
@@ -73,7 +73,8 @@ func handleDealer(d *Dealer, playerScore int) {
 
 	for score < 16 && score < playerScore || hasSoft17 {
 		fmt.Println("The dealer hits!")
-		d.takeCard(dealCard())
+		newCard := dealer.deal()
+		d.takeCard(newCard)
 		if isBust(d) {
 			fmt.Println(dealerIsBust)
 			os.Exit(0)
@@ -90,7 +91,8 @@ func handlePlayer(p *Player) {
 
 	for giveMe {
 		if playerChoice() == hit {
-			p.takeCard(dealCard())
+			newCard := dealer.deal()
+			p.takeCard(newCard)
 			if isBust(p) {
 				fmt.Println(playerIsBust)
 				os.Exit(0)

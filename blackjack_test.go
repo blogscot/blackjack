@@ -57,7 +57,7 @@ func TestScoring(t *testing.T) {
 
 	t.Run("the dealer can score cards", func(t *testing.T) {
 		card1 := deck.Card{Suit: deck.Hearts, Value: deck.King}
-		dealer.faceDown = ace
+		dealer.hiddenCard = ace
 		dealer.cards = []deck.Card{card1}
 
 		wanted := 21
@@ -71,7 +71,7 @@ func TestScoring(t *testing.T) {
 	t.Run("the dealer has a low ace card", func(t *testing.T) {
 		card1 := deck.Card{Suit: deck.Spades, Value: deck.Six}
 		dealer.cards = []deck.Card{card1, ten}
-		dealer.faceDown = ace
+		dealer.hiddenCard = ace
 		wanted := 17
 		got := dealer.score()
 
@@ -83,7 +83,7 @@ func TestScoring(t *testing.T) {
 	t.Run("the dealer has a high ace card", func(t *testing.T) {
 		card1 := deck.Card{Suit: deck.Clubs, Value: deck.Nine}
 		dealer.cards = []deck.Card{card1}
-		dealer.faceDown = ace
+		dealer.hiddenCard = ace
 		wanted := 20
 		got := dealer.score()
 

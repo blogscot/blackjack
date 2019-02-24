@@ -20,7 +20,8 @@ type Player struct {
 // Dealer behaves like a player but keeps one card hidden
 type Dealer struct {
 	Player
-	faceDown deck.Card
+	hiddenCard deck.Card
+	deal       func() (card deck.Card)
 }
 
 type choice int
@@ -43,13 +44,15 @@ You're BUST!
 var (
 	reader = bufio.NewReader(os.Stdin)
 
-	dealer  = Dealer{Player: Player{name: "The dealer"}}
+	dealer  = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
 	player1 = Player{name: "You"}
 	players = []Participant{&player1, &dealer}
-	cards   = deck.New()
+	cards   deck.Deck
 )
 
-func startGame() {
+// Start starts the game
+func Start(deck deck.Deck) {
+	cards = deck
 	cards.Shuffle()
 
 	for n := 1; n <= 2; n++ {
@@ -77,9 +80,9 @@ func (p *Player) takeCard(c deck.Card) {
 }
 
 func (d *Dealer) takeCard(c deck.Card) {
-	if d.faceDown == (deck.Card{}) {
+	if d.hiddenCard == (deck.Card{}) {
 		fmt.Printf("The dealer places a card face down.\n")
-		d.faceDown = c
+		d.hiddenCard = c
 	} else {
 		fmt.Printf("%s receives %s\n", d.name, c)
 		d.cards = append(d.cards, c)
@@ -97,7 +100,7 @@ func (p Player) score() (total int) {
 }
 
 func (d Dealer) score() (total int) {
-	total = d.Player.score() + scoreCard(d.faceDown)
+	total = d.Player.score() + scoreCard(d.hiddenCard)
 	if d.hasAce() && total <= 11 {
 		total += 10
 	}
@@ -114,7 +117,7 @@ func (p Player) hasAce() bool {
 }
 
 func (d Dealer) hasAce() bool {
-	return d.Player.hasAce() || d.faceDown.Value == deck.Ace
+	return d.Player.hasAce() || d.hiddenCard.Value == deck.Ace
 }
 
 func scoreCard(c deck.Card) (score int) {
