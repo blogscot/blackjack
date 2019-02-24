@@ -58,22 +58,23 @@ func play(s *Participant) (err error) {
 	case *Dealer:
 		err = handleDealer(p, player1.score())
 	}
-	return err
+	return
 }
 
 func handleDealer(d *Dealer, playerScore int) error {
 	showHands(true)
 
 	score := d.score()
-	hasSoft17 := score == 7 && d.hasAce()
+	hasSoft17 := score == 17 && d.hasAce()
 	if hasSoft17 {
 		fmt.Println("The dealer has a soft 17.")
 	}
 
-	for score < 16 && score < playerScore || hasSoft17 {
+	for score < 16 || score < playerScore || hasSoft17 {
 		fmt.Print("The dealer hits, ")
 		newCard := dealer.deal()
 		d.add(newCard)
+		score = d.score()
 		if isBust(d) {
 			return errors.New("The dealer is bust")
 		}
