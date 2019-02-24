@@ -11,19 +11,19 @@ import (
 	"github.com/blogscot/deck"
 )
 
-// Pack ...
+// Pack provides an interface for testing purposes
 type Pack interface {
 	Shuffle()
 }
 
-// Player ...
+// Player holds a players details
 type Player struct {
 	name  string
 	cards []deck.Card
 	total int
 }
 
-// Dealer behaves like a player but keeps one card hidden
+// Dealer holds the dealers details
 type Dealer struct {
 	Player
 	hiddenCard deck.Card
@@ -54,7 +54,7 @@ var (
 	reader = bufio.NewReader(os.Stdin)
 
 	dealer  = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
-	player1 = Player{name: "You"}
+	player1 = Player{name: "Player1"}
 	players = []Participant{&player1, &dealer}
 	cards   *deck.Deck
 )
@@ -71,16 +71,20 @@ func Play() {
 	justPlayersLength := len(players) - 1
 	ps := players[:justPlayersLength]
 	for _, p := range ps {
-		play(&p)
+		if err := play(&p); err != nil {
+			fmt.Printf("%s is BUST!\n", err.Error())
+			return
+		}
 	}
 
 	d := players[justPlayersLength]
-	play(&d)
+	if err := play(&d); err != nil {
+		fmt.Printf("The dealer is BUST!\n")
+		return
+	}
 
 	winner := decideWinner(players)
-	if winner == "You" {
-		fmt.Printf("\n%s win!\n", winner)
-	} else if winner == gameIsDrawn {
+	if winner == gameIsDrawn {
 		fmt.Printf("\nThe game is a draw!")
 	} else {
 		fmt.Printf("\n%s wins!\n", winner)
@@ -95,7 +99,7 @@ func start(pack Pack) {
 	for n := 1; n <= 2; n++ {
 		for _, p := range players {
 			c := dealCard()
-			p.takeCard(c)
+			p.add(c)
 		}
 	}
 	showHands(false)
@@ -111,17 +115,17 @@ func (p *Player) getName() string {
 	return p.name
 }
 
-func (p *Player) takeCard(c deck.Card) {
-	fmt.Printf("%s receive %s\n", p.name, c)
+func (p *Player) add(c deck.Card) {
+	fmt.Printf("%s receives %s\n", p.name, c)
 	p.cards = append(p.cards, c)
 }
 
-func (d *Dealer) takeCard(c deck.Card) {
+func (d *Dealer) add(c deck.Card) {
 	if d.hiddenCard == (deck.Card{}) {
 		fmt.Printf("The dealer places a card face down.\n")
 		d.hiddenCard = c
 	} else {
-		fmt.Printf("%s receives %s\n", d.name, c)
+		fmt.Printf("and receives %s\n", c)
 		d.cards = append(d.cards, c)
 	}
 }

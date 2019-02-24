@@ -1,8 +1,8 @@
 package blackjack
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"sort"
 	"strings"
 
@@ -12,7 +12,7 @@ import (
 // Participant ...
 type Participant interface {
 	score() int
-	takeCard(c deck.Card)
+	add(c deck.Card)
 	getName() string
 }
 
@@ -51,20 +51,19 @@ func isBust(s Participant) bool {
 	return s.score() > 21
 }
 
-func play(s *Participant) {
+func play(s *Participant) (err error) {
 	switch p := (*s).(type) {
 	case *Player:
-		handlePlayer(p)
+		err = handlePlayer(p)
 	case *Dealer:
-		handleDealer(p, player1.score())
+		err = handleDealer(p, player1.score())
 	}
+	return err
 }
 
-func handleDealer(d *Dealer, playerScore int) {
+func handleDealer(d *Dealer, playerScore int) error {
 	showHands(true)
 
-	// TODO: When deciding whether to continue the dealer needs
-	// to check if aces are low or high.
 	score := d.score()
 	hasSoft17 := score == 7 && d.hasAce()
 	if hasSoft17 {
@@ -72,30 +71,29 @@ func handleDealer(d *Dealer, playerScore int) {
 	}
 
 	for score < 16 && score < playerScore || hasSoft17 {
-		fmt.Println("The dealer hits!")
+		fmt.Print("The dealer hits, ")
 		newCard := dealer.deal()
-		d.takeCard(newCard)
+		d.add(newCard)
 		if isBust(d) {
-			fmt.Println(dealerIsBust)
-			os.Exit(0)
+			return errors.New("The dealer is bust")
 		}
 	}
 
 	fmt.Println("The dealer stands.")
 	d.total = d.score()
 	showHands(true)
+	return nil
 }
 
-func handlePlayer(p *Player) {
+func handlePlayer(p *Player) error {
 	giveMe := true
 
 	for giveMe {
 		if playerChoice() == hit {
 			newCard := dealer.deal()
-			p.takeCard(newCard)
+			p.add(newCard)
 			if isBust(p) {
-				fmt.Println(playerIsBust)
-				os.Exit(0)
+				return fmt.Errorf("%s", p.getName())
 			}
 			showHands(false)
 		} else {
@@ -103,6 +101,7 @@ func handlePlayer(p *Player) {
 		}
 	}
 	p.total = p.score()
+	return nil
 }
 
 func decideWinner(s []Participant) string {
