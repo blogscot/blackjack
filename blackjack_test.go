@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"strings"
 	"testing"
 
 	"github.com/blogscot/deck"
@@ -137,5 +139,40 @@ func TestWinner(t *testing.T) {
 		if got != wanted {
 			t.Errorf("got %q, wanted %q", got, wanted)
 		}
+	})
+}
+
+func TestPlayerInput(t *testing.T) {
+
+	assertChoice := func(t *testing.T, want choice) {
+		t.Helper()
+		got := playerChoice()
+
+		if got != want {
+			t.Errorf("got %q, wanted %q", got, want)
+		}
+	}
+
+	t.Run("Player hits", func(t *testing.T) {
+		sr := strings.NewReader("H\n")
+		// Override the standard IO reader
+		reader = bufio.NewReader(sr)
+		assertChoice(t, hit)
+	})
+
+	t.Run("Player stands", func(t *testing.T) {
+		sr := strings.NewReader("s\n")
+		reader = bufio.NewReader(sr)
+
+		assertChoice(t, stand)
+	})
+
+	t.Run("Player hits then stands", func(t *testing.T) {
+		sr := strings.NewReader("H\nh\nh\ns\n")
+		reader = bufio.NewReader(sr)
+		assertChoice(t, hit)
+		assertChoice(t, hit)
+		assertChoice(t, hit)
+		assertChoice(t, stand)
 	})
 }

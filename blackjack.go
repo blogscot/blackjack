@@ -34,6 +34,9 @@ type choice int
 const (
 	hit = iota
 	stand
+)
+
+const (
 	pageBreak    = "=================================\n"
 	dealerIsBust = `
 ++++++++++++++++++++++++++++
