@@ -60,13 +60,16 @@ var (
 )
 
 // Play plays the game
-func Play() {
+func Play(pack Pack) {
 	fmt.Println("Let's play BlackJack!")
 	fmt.Println("\nThe dealer shuffles the deck thoroughly then starts dealing...")
 	fmt.Println()
 
-	deck := deck.New()
-	start(&deck)
+	cards = pack.(*deck.Deck)
+	cards.Shuffle()
+
+	dealFirstHand()
+	showHands(false)
 
 	justPlayersLength := len(players) - 1
 	ps := players[:justPlayersLength]
@@ -91,18 +94,13 @@ func Play() {
 	}
 }
 
-// Start starts the game
-func start(pack Pack) {
-	cards = pack.(*deck.Deck)
-	cards.Shuffle()
-
+func dealFirstHand() {
 	for n := 1; n <= 2; n++ {
 		for _, p := range players {
 			c := dealCard()
 			p.add(c)
 		}
 	}
-	showHands(false)
 }
 
 func dealCard() (card deck.Card) {

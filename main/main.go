@@ -1,7 +1,12 @@
 package main
 
-import "github.com/blogscot/blackjack"
+import (
+	"github.com/blogscot/blackjack"
+	"github.com/blogscot/deck"
+)
 
 func main() {
-	blackjack.Play()
+	deck := deck.New()
+
+	blackjack.Play(&deck)
 }
