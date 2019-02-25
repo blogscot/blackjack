@@ -57,10 +57,10 @@ The dealer shuffles the deck thoroughly then starts dealing...
 var (
 	reader = bufio.NewReader(os.Stdin)
 
-	dealer  = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
-	player1 = Player{name: "Player1"}
-	players = []Participant{&player1, &dealer}
-	cards   *deck.Deck
+	dealer       = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
+	player1      = Player{name: "Player1"}
+	participants = []Participant{&player1, &dealer}
+	cards        *deck.Deck
 )
 
 // Play plays the game
@@ -73,8 +73,8 @@ func Play(pack Pack) {
 	dealFirstHand()
 	showHands(false)
 
-	justPlayersLength := len(players) - 1
-	justPlayers := players[:justPlayersLength]
+	justPlayersLength := len(participants) - 1
+	justPlayers := participants[:justPlayersLength]
 	for _, p := range justPlayers {
 		if err := play(&p); err != nil {
 			fmt.Printf("%s is BUST!\n", err.Error())
@@ -82,13 +82,13 @@ func Play(pack Pack) {
 		}
 	}
 
-	d := players[justPlayersLength]
+	d := participants[justPlayersLength]
 	if err := play(&d); err != nil {
 		fmt.Printf("The dealer is BUST!\n")
 		return
 	}
 
-	winner := decideWinner(players)
+	winner := decideWinner(participants)
 	if winner == gameIsDrawn {
 		fmt.Printf("\nThe game is a draw!")
 	} else {
@@ -98,7 +98,7 @@ func Play(pack Pack) {
 
 func dealFirstHand() {
 	for n := 1; n <= 2; n++ {
-		for _, p := range players {
+		for _, p := range participants {
 			c := dealCard()
 			p.add(c)
 		}
@@ -116,16 +116,13 @@ func (p *Player) getName() string {
 }
 
 func (p *Player) add(c deck.Card) {
-	fmt.Printf("%s receives %s\n", p.name, c)
 	p.cards = append(p.cards, c)
 }
 
 func (d *Dealer) add(c deck.Card) {
 	if d.hiddenCard == (deck.Card{}) {
-		fmt.Printf("The dealer places a card face down.\n")
 		d.hiddenCard = c
 	} else {
-		fmt.Printf("and receives %s\n", c)
 		d.cards = append(d.cards, c)
 	}
 }
