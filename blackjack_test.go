@@ -232,3 +232,60 @@ func TestDealer(t *testing.T) {
 		}
 	})
 }
+
+type testingDeck struct {
+	deck.Deck
+}
+
+func (t *testingDeck) Shuffle() {
+	// No shuffling here
+}
+
+func (t *testingDeck) Cards() *deck.Deck {
+	return &t.Deck
+}
+
+func TestGame(t *testing.T) {
+
+	assertEquals := func(t *testing.T, got, wanted int) {
+		t.Helper()
+
+		if got != wanted {
+			t.Errorf("got %d, wanted %d", got, wanted)
+		}
+	}
+
+	t.Run("Player hits and goes bust", func(t *testing.T) {
+		initTest()
+		cards := deck.Deck{ten, three, two, five, ten}
+
+		// Player hits
+		sr := strings.NewReader("h\n")
+		reader = bufio.NewReader(sr)
+
+		Play(&testingDeck{cards})
+
+		assertEquals(t, player1.score(), 22)
+		assertEquals(t, dealer.score(), 8)
+	})
+
+	t.Run("Player wins with blackjack", func(t *testing.T) {
+		initTest()
+		cards := deck.Deck{ten, eight, ace, five, seven, three}
+
+		// Player stands
+		sr := strings.NewReader("s\n")
+		reader = bufio.NewReader(sr)
+
+		Play(&testingDeck{cards})
+
+		assertEquals(t, player1.score(), 21)
+		assertEquals(t, dealer.score(), 23)
+	})
+}
+
+func initTest() {
+	player1 = Player{name: "TestPlayer"}
+	dealer = Dealer{Player: Player{name: "Dealer"}}
+	dealer.deal = dealCard
+}

@@ -67,8 +67,8 @@ var (
 func Play(pack Pack) {
 	fmt.Println(letsPlay)
 
+	pack.Shuffle()
 	cards = pack.Cards()
-	cards.Shuffle()
 
 	dealFirstHand()
 	showHands(false)
