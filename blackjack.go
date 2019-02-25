@@ -14,13 +14,13 @@ import (
 // Pack provides an interface for testing purposes
 type Pack interface {
 	Shuffle()
+	Cards() *deck.Deck
 }
 
 // Player holds a players details
 type Player struct {
 	name  string
 	cards []deck.Card
-	total int
 }
 
 // Dealer holds the dealers details
@@ -65,7 +65,7 @@ func Play(pack Pack) {
 	fmt.Println("\nThe dealer shuffles the deck thoroughly then starts dealing...")
 	fmt.Println()
 
-	cards = pack.(*deck.Deck)
+	cards = pack.Cards()
 	cards.Shuffle()
 
 	dealFirstHand()
@@ -212,4 +212,24 @@ func playerChoice() choice {
 		return hit
 	}
 	return stand
+}
+
+// Standard wraps the deck to facilitate testing
+type Standard struct {
+	deck.Deck
+}
+
+// Shuffle shuffles the standard deck of cards
+func (p *Standard) Shuffle() {
+	p.Deck.Shuffle()
+}
+
+// Cards unwraps the deck
+func (p Standard) Cards() *deck.Deck {
+	return &p.Deck
+}
+
+// Deck returns a brand new card deck.
+func Deck() Standard {
+	return Standard{deck.New()}
 }
