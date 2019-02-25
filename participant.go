@@ -76,7 +76,7 @@ func handleDealer(d *Dealer, playerScore int) error {
 	hasSoft17 := score == 17 && d.hasAce()
 	for score < playerScore || hasSoft17 {
 		fmt.Print("The dealer hits, ")
-		newCard := dealer.deal()
+		newCard := d.deal()
 		d.add(newCard)
 		score = d.score()
 		if isBust(d) {
@@ -84,9 +84,6 @@ func handleDealer(d *Dealer, playerScore int) error {
 		}
 		if score > playerScore || score == 21 {
 			return dealerStands()
-		}
-		if isBust(d) {
-			return errors.New("The dealer is bust")
 		}
 	}
 
