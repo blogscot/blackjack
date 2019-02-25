@@ -188,8 +188,8 @@ func TestDealer(t *testing.T) {
 		dealer.cards = []deck.Card{ten}
 		dealer.hiddenCard = three
 
-		nextCard := deck.Deck([]deck.Card{ace, six})
-		cards = &nextCard
+		nextCards := deck.Deck([]deck.Card{ace, six})
+		cards = &nextCards
 
 		handleDealer(&dealer, player1.score())
 		wanted := 20
@@ -199,6 +199,21 @@ func TestDealer(t *testing.T) {
 			t.Errorf("got %d, wanted %d", got, wanted)
 		}
 	})
-}
 
-// Fix: Player has 21, Dealer has soft 17 gets a 4 which should end the game in a draw but the dealer continues hitting, then goes bust - letting the player win! Boooo!
+	t.Run("dealer should accept draw if winning is impossible", func(t *testing.T) {
+		player1.cards = []deck.Card{ace, ten}
+		dealer.cards = []deck.Card{six}
+		dealer.hiddenCard = ace
+
+		nextCards := deck.Deck([]deck.Card{four, five, six, seven, eight})
+		cards = &nextCards
+
+		handleDealer(&dealer, player1.score())
+		wanted := 21
+		got := dealer.score()
+
+		if got != wanted {
+			t.Errorf("got %d, wanted %d", got, wanted)
+		}
+	})
+}
