@@ -48,6 +48,10 @@ The dealer is BUST. You win!
 You're BUST!
 ++++++++++++`
 	gameIsDrawn = "Draw"
+	letsPlay    = `Let's play BlackJack!
+
+The dealer shuffles the deck thoroughly then starts dealing...
+`
 )
 
 var (
@@ -61,9 +65,7 @@ var (
 
 // Play plays the game
 func Play(pack Pack) {
-	fmt.Println("Let's play BlackJack!")
-	fmt.Println("\nThe dealer shuffles the deck thoroughly then starts dealing...")
-	fmt.Println()
+	fmt.Println(letsPlay)
 
 	cards = pack.Cards()
 	cards.Shuffle()
@@ -72,8 +74,8 @@ func Play(pack Pack) {
 	showHands(false)
 
 	justPlayersLength := len(players) - 1
-	ps := players[:justPlayersLength]
-	for _, p := range ps {
+	justPlayers := players[:justPlayersLength]
+	for _, p := range justPlayers {
 		if err := play(&p); err != nil {
 			fmt.Printf("%s is BUST!\n", err.Error())
 			return
