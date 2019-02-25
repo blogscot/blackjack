@@ -22,7 +22,11 @@ func showHands(showAll bool) {
 	fmt.Printf("%s (score %d).", showHand(&player1, false), player1.score())
 
 	fmt.Print("\nThe dealer has: ")
-	fmt.Printf("%s.\n", showHand(&dealer, showAll))
+	if showAll {
+		fmt.Printf("%s (score %d).\n", showHand(&dealer, showAll), dealer.score())
+	} else {
+		fmt.Printf("%s.\n", showHand(&dealer, showAll))
+	}
 }
 
 func showHand(s Participant, showAll bool) string {
@@ -81,7 +85,6 @@ func handleDealer(d *Dealer, playerScore int) error {
 	}
 
 	fmt.Println("The dealer stands.")
-	d.total = d.score()
 	showHands(true)
 	return nil
 }
@@ -101,7 +104,6 @@ func handlePlayer(p *Player) error {
 			giveMe = false
 		}
 	}
-	p.total = p.score()
 	return nil
 }
 
