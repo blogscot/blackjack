@@ -79,6 +79,9 @@ func handleDealer(d *Dealer, playerScore int) error {
 		newCard := dealer.deal()
 		d.add(newCard)
 		score = d.score()
+		if isBust(d) {
+			return errors.New("The dealer is bust")
+		}
 		if score > playerScore || score == 21 {
 			return dealerStands()
 		}
