@@ -72,7 +72,7 @@ func TestScoring(t *testing.T) {
 	})
 
 	t.Run("the dealer has a low ace card", func(t *testing.T) {
-		dealer.cards = []deck.Card{six, ten}
+		dealer.cards = []deck.Card{six, jack}
 		dealer.hiddenCard = ace
 		wanted := 17
 		got := dealer.score()
@@ -100,7 +100,7 @@ func TestWinner(t *testing.T) {
 	dealer := Dealer{Player: Player{name: "Dealer"}}
 
 	t.Run("player wins", func(t *testing.T) {
-		player1.cards = []deck.Card{nine, ten}
+		player1.cards = []deck.Card{nine, queen}
 		dealer.cards = []deck.Card{eight}
 		dealer.hiddenCard = ten
 		game := []Participant{&player1, &dealer}
@@ -247,6 +247,12 @@ func (t *testingDeck) Cards() *deck.Deck {
 
 func TestGame(t *testing.T) {
 
+	initTest := func() {
+		player1 = Player{name: "TestPlayer"}
+		dealer = Dealer{Player: Player{name: "Dealer"}}
+		dealer.deal = dealCard
+	}
+
 	assertEquals := func(t *testing.T, got, wanted int) {
 		t.Helper()
 
@@ -282,10 +288,4 @@ func TestGame(t *testing.T) {
 		assertEquals(t, player1.score(), 21)
 		assertEquals(t, dealer.score(), 23)
 	})
-}
-
-func initTest() {
-	player1 = Player{name: "TestPlayer"}
-	dealer = Dealer{Player: Player{name: "Dealer"}}
-	dealer.deal = dealCard
 }
