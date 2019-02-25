@@ -180,8 +180,9 @@ func TestPlayerInput(t *testing.T) {
 
 func TestDealer(t *testing.T) {
 
-	player1 := Player{name: "TestPlayer"}
-	dealer := Dealer{Player: Player{name: "Dealer"}}
+	player1 = Player{name: "TestPlayer"}
+	dealer = Dealer{Player: Player{name: "Dealer"}}
+	dealer.deal = dealCard
 
 	t.Run("dealer does not go bust on drawing ace with thirteen", func(t *testing.T) {
 		player1.cards = []deck.Card{nine, ten}
@@ -191,7 +192,14 @@ func TestDealer(t *testing.T) {
 		nextCards := deck.Deck([]deck.Card{ace, six})
 		cards = &nextCards
 
-		handleDealer(&dealer, player1.score())
+		// Player stands
+		sr := strings.NewReader("s\n")
+		reader = bufio.NewReader(sr)
+
+		ps := []Participant{&player1, &dealer}
+		for _, p := range ps {
+			play(&p)
+		}
 		wanted := 20
 		got := dealer.score()
 
@@ -205,10 +213,17 @@ func TestDealer(t *testing.T) {
 		dealer.cards = []deck.Card{six}
 		dealer.hiddenCard = ace
 
-		nextCards := deck.Deck([]deck.Card{four, five, six, seven, eight})
+		nextCards := deck.Deck([]deck.Card{four, five, six})
 		cards = &nextCards
 
-		handleDealer(&dealer, player1.score())
+		// Player stands
+		sr := strings.NewReader("s\n")
+		reader = bufio.NewReader(sr)
+
+		ps := []Participant{&player1, &dealer}
+		for _, p := range ps {
+			play(&p)
+		}
 		wanted := 21
 		got := dealer.score()
 
