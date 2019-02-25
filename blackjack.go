@@ -139,7 +139,10 @@ func (p Player) score() (total int) {
 }
 
 func (d Dealer) score() (total int) {
-	total = d.Player.score() + scoreCard(d.hiddenCard)
+	for _, c := range d.cards {
+		total += scoreCard(c)
+	}
+	total += scoreCard(d.hiddenCard)
 	if d.hasAce() && total <= 11 {
 		total += 10
 	}

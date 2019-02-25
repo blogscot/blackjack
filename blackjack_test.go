@@ -140,6 +140,7 @@ func TestWinner(t *testing.T) {
 			t.Errorf("got %q, wanted %q", got, wanted)
 		}
 	})
+
 }
 
 func TestPlayerInput(t *testing.T) {
@@ -176,3 +177,28 @@ func TestPlayerInput(t *testing.T) {
 		assertChoice(t, stand)
 	})
 }
+
+func TestDealer(t *testing.T) {
+
+	player1 := Player{name: "TestPlayer"}
+	dealer := Dealer{Player: Player{name: "Dealer"}}
+
+	t.Run("dealer does not go bust on drawing ace with thirteen", func(t *testing.T) {
+		player1.cards = []deck.Card{nine, ten}
+		dealer.cards = []deck.Card{ten}
+		dealer.hiddenCard = three
+
+		nextCard := deck.Deck([]deck.Card{ace, six})
+		cards = &nextCard
+
+		handleDealer(&dealer, player1.score())
+		wanted := 20
+		got := dealer.score()
+
+		if got != wanted {
+			t.Errorf("got %d, wanted %d", got, wanted)
+		}
+	})
+}
+
+// Fix: Player has 21, Dealer has soft 17 gets a 4 which should end the game in a draw but the dealer continues hitting, then goes bust - letting the player win! Boooo!
