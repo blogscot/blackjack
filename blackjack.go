@@ -98,7 +98,6 @@ func playHand() {
 		fmt.Printf("%s is BUST!\n", err.Error())
 		return
 	}
-	}
 
 	d := Participant(&dealer)
 	if err := play(&d); err != nil {
@@ -151,8 +150,8 @@ func (d *Dealer) add(c deck.Card) {
 }
 
 func clearCards() {
-	player1 = Player{name: "TestPlayer"}
-	dealer = Dealer{Player: Player{name: "Dealer"}, deal: dealCard}
+	player1 = Player{name: "Player1"}
+	dealer = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
 }
 
 func (p Player) score() (total int) {
