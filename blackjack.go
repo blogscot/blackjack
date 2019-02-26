@@ -126,6 +126,11 @@ func dealFirstHand() {
 }
 
 func dealCard() (card deck.Card) {
+	if len(*cards) == 0 {
+		fmt.Println("The dealer opens a new deck, and shuffles the cards")
+		*cards = deck.New()
+		cards.Shuffle()
+	}
 	card = (*cards)[0]
 	*cards = (*cards)[1:]
 	return
