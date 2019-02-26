@@ -249,8 +249,7 @@ func TestGame(t *testing.T) {
 
 	initTest := func() {
 		player1 = Player{name: "TestPlayer"}
-		dealer = Dealer{Player: Player{name: "Dealer"}}
-		dealer.deal = dealCard
+		dealer = Dealer{Player: Player{name: "Dealer"}, deal: dealCard}
 	}
 
 	assertEquals := func(t *testing.T, got, wanted int) {
@@ -263,10 +262,10 @@ func TestGame(t *testing.T) {
 
 	t.Run("Player hits and goes bust", func(t *testing.T) {
 		initTest()
-		cards := deck.Deck{ten, three, two, five, ten}
+		cards := deck.Deck{ten, three, two, five, ten, eight}
 
-		// Player hits
-		sr := strings.NewReader("h\n")
+		// Player hits and quits game
+		sr := strings.NewReader("h\nn\n")
 		reader = bufio.NewReader(sr)
 
 		Play(&testingDeck{cards})
@@ -279,8 +278,8 @@ func TestGame(t *testing.T) {
 		initTest()
 		cards := deck.Deck{ten, eight, ace, five, seven, three}
 
-		// Player stands
-		sr := strings.NewReader("s\n")
+		// Player stands and quits game
+		sr := strings.NewReader("s\nn\n")
 		reader = bufio.NewReader(sr)
 
 		Play(&testingDeck{cards})

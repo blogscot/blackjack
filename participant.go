@@ -29,10 +29,10 @@ func showHands(showAll bool) {
 	}
 }
 
-func showHand(s Participant, showAll bool) string {
+func showHand(p Participant, showAll bool) string {
 	arr := []string{}
 
-	switch s.(type) {
+	switch p.(type) {
 	case *Player:
 		for _, card := range player1.cards {
 			arr = append(arr, card.String())

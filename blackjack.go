@@ -4,7 +4,6 @@ package blackjack
 import (
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -50,7 +49,8 @@ You're BUST!
 	gameIsDrawn = "Draw"
 	letsPlay    = `Let's play BlackJack!
 
-The dealer shuffles the deck thoroughly then starts dealing...
+The dealer shuffles the deck thoroughly.`
+	dealNewHand = `The dealer deals a new hand.
 `
 )
 
@@ -66,10 +66,30 @@ var (
 // Play plays the game
 func Play(pack Pack) {
 	fmt.Println(letsPlay)
-
 	pack.Shuffle()
-	cards = pack.Cards()
 
+	cards = pack.Cards()
+	quitGame := false
+	text := "y"
+
+	for !quitGame {
+		fmt.Println(dealNewHand)
+		playHand()
+
+		fmt.Print("\nPlay again? (Y/n)? ")
+		text, _ = reader.ReadString('\n')
+		text = strings.TrimRight(strings.ToLower(text), "\n")
+		if text == "n" {
+			quitGame = true
+			break
+		}
+		fmt.Println()
+		clearCards()
+	}
+	fmt.Println("Thanks for playing. Bye!")
+}
+
+func playHand() {
 	dealFirstHand()
 	showHands(false)
 
@@ -127,6 +147,11 @@ func (d *Dealer) add(c deck.Card) {
 	}
 }
 
+func clearCards() {
+	player1 = Player{name: "TestPlayer"}
+	dealer = Dealer{Player: Player{name: "Dealer"}, deal: dealCard}
+}
+
 func (p Player) score() (total int) {
 	for _, c := range p.cards {
 		total += scoreCard(c)
@@ -165,8 +190,6 @@ func scoreCard(c deck.Card) (score int) {
 	score = int(c.Value) + 1
 	if score > 10 && score <= 13 {
 		score = 10
-	default:
-		log.Fatalf("invalid card: %s of %s", c.Value, c.Suit)
 	}
 	return
 }
