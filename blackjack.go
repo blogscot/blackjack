@@ -93,16 +93,14 @@ func playHand() {
 	dealFirstHand()
 	showHands(false)
 
-	justPlayersLength := len(participants) - 1
-	justPlayers := participants[:justPlayersLength]
-	for _, p := range justPlayers {
-		if err := play(&p); err != nil {
-			fmt.Printf("%s is BUST!\n", err.Error())
-			return
-		}
+	p := Participant(&player1)
+	if err := play(&p); err != nil {
+		fmt.Printf("%s is BUST!\n", err.Error())
+		return
+	}
 	}
 
-	d := participants[justPlayersLength]
+	d := Participant(&dealer)
 	if err := play(&d); err != nil {
 		fmt.Printf("The dealer is BUST!\n")
 		return
