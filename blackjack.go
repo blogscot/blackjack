@@ -162,32 +162,8 @@ func (d Dealer) hasAce() bool {
 }
 
 func scoreCard(c deck.Card) (score int) {
-	switch c.Value {
-	case deck.Ace:
-		score = 1
-	case deck.Two:
-		score = 2
-	case deck.Three:
-		score = 3
-	case deck.Four:
-		score = 4
-	case deck.Five:
-		score = 5
-	case deck.Six:
-		score = 6
-	case deck.Seven:
-		score = 7
-	case deck.Eight:
-		score = 8
-	case deck.Nine:
-		score = 9
-	case deck.Ten:
-		score = 10
-	case deck.Jack:
-		score = 10
-	case deck.Queen:
-		score = 10
-	case deck.King:
+	score = int(c.Value) + 1
+	if score > 10 && score <= 13 {
 		score = 10
 	default:
 		log.Fatalf("invalid card: %s of %s", c.Value, c.Suit)
