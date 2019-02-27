@@ -9,3 +9,7 @@ To start a game, type:
 ```
 go run main/main.go
 ```
+
+## Build Status
+
+[![Build Status](https://travis-ci.org/blogscot/blackjack.svg?branch=master)](https://github.com/blogscot/blackjack)
