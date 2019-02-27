@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/blogscot/deck"
+	deck "github.com/blogscot/card-deck"
 )
 
 // Pack provides an interface for testing purposes

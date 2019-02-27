@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/blogscot/deck"
+	deck "github.com/blogscot/card-deck"
 )
 
 var (

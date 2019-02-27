@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/blogscot/deck"
+	deck "github.com/blogscot/card-deck"
 )
 
 // Participant ...
