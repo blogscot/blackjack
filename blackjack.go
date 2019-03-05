@@ -37,15 +37,7 @@ const (
 )
 
 const (
-	pageBreak    = "=================================\n"
-	dealerIsBust = `
-++++++++++++++++++++++++++++
-The dealer is BUST. You win!
-++++++++++++++++++++++++++++`
-	playerIsBust = `
-++++++++++++
-You're BUST!
-++++++++++++`
+	pageBreak   = "=================================\n"
 	gameIsDrawn = "Draw"
 	letsPlay    = `Let's play BlackJack!
 
@@ -69,10 +61,9 @@ func Play(pack Pack) {
 	pack.Shuffle()
 
 	cards = pack.Cards()
-	quitGame := false
-	text := "y"
+	var text string
 
-	for !quitGame {
+	for {
 		fmt.Println(dealNewHand)
 		playHand()
 
@@ -80,7 +71,6 @@ func Play(pack Pack) {
 		text, _ = reader.ReadString('\n')
 		text = strings.TrimRight(strings.ToLower(text), "\n")
 		if text == "n" {
-			quitGame = true
 			break
 		}
 		fmt.Println()

@@ -168,7 +168,7 @@ func TestDealer(t *testing.T) {
 
 		ps := []Participant{&player1, &dealer}
 		for _, p := range ps {
-			play(&p)
+			_ = play(&p)
 		}
 		wanted := 20
 		got := dealer.score()
@@ -192,7 +192,7 @@ func TestDealer(t *testing.T) {
 
 		ps := []Participant{&player1, &dealer}
 		for _, p := range ps {
-			play(&p)
+			_ = play(&p)
 		}
 		wanted := 21
 		got := dealer.score()
