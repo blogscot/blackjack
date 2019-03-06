@@ -153,7 +153,7 @@ func TestParticipants(t *testing.T) {
 		sr := strings.NewReader("h\n")
 		reader = bufio.NewReader(sr)
 
-		err := handlePlayer(&player1)
+		err := player1.play()
 		want := "TestPlayer"
 
 		if err.Error() != want {

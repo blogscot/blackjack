@@ -20,17 +20,17 @@ type Participant interface {
 func showHands(hideCard bool) {
 	fmt.Print(pageBreak)
 	fmt.Print("Player1 has: ")
-	fmt.Printf("%s. (score %d)", getPlayerHand(player1), player1.score())
+	fmt.Printf("%s. (score %d)", player1.Hand(), player1.score())
 
 	fmt.Print("\nThe dealer has: ")
-	dealerCards := fmt.Sprintf("%s.", getDealerHand(dealer, hideCard))
+	dealerCards := fmt.Sprintf("%s.", dealer.Hand(hideCard))
 	if !hideCard {
 		dealerCards += fmt.Sprintf(" (score %d)\n", dealer.score())
 	}
 	fmt.Print(dealerCards)
 }
 
-func getPlayerHand(p Player) string {
+func (p Player) Hand() string {
 	arr := []string{}
 	for _, card := range player1.hand {
 		arr = append(arr, card.String())
@@ -38,7 +38,7 @@ func getPlayerHand(p Player) string {
 	return strings.Join(arr, ", ")
 }
 
-func getDealerHand(d Dealer, hideCard bool) string {
+func (d Dealer) Hand(hideCard bool) string {
 	arr := []string{}
 	cards := d.hand
 
@@ -61,14 +61,14 @@ func isBust(s Participant) bool {
 func play(s *Participant) (err error) {
 	switch p := (*s).(type) {
 	case *Player:
-		err = handlePlayer(p)
+		err = p.play()
 	case *Dealer:
-		err = handleDealer(p, player1.score())
+		err = p.play(player1.score())
 	}
 	return
 }
 
-func handleDealer(d *Dealer, playerScore int) error {
+func (d *Dealer) play(playerScore int) error {
 	showHands(false)
 
 	score := d.score()
@@ -100,10 +100,9 @@ func dealerStands() error {
 	return nil
 }
 
-func handlePlayer(p *Player) error {
-	giveMe := true
+func (p *Player) play() error {
 
-	for giveMe {
+	for {
 		if playerChoice() == hit {
 			newCard := dealer.dealCard()
 			fmt.Printf("You receive %s.\n", newCard)
@@ -113,7 +112,7 @@ func handlePlayer(p *Player) error {
 			}
 			showHands(true)
 		} else {
-			giveMe = false
+			break
 		}
 	}
 	return nil
