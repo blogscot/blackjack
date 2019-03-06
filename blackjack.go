@@ -25,8 +25,7 @@ type Player struct {
 // Dealer holds the dealers details
 type Dealer struct {
 	Player
-	hiddenCard deck.Card
-	cards      *deck.Deck
+	cards *deck.Deck
 }
 
 type choice int
@@ -88,7 +87,7 @@ func playAgain() (text string) {
 
 func playHand() {
 	dealer.dealFirstHand()
-	showHands(false)
+	showHands(true)
 
 	p := Participant(&player1)
 	if err := play(&p); err != nil {
@@ -139,17 +138,12 @@ func (p *Player) add(c deck.Card) {
 }
 
 func (d *Dealer) add(c deck.Card) {
-	if d.hiddenCard == (deck.Card{}) {
-		d.hiddenCard = c
-	} else {
-		d.hand = append(d.hand, c)
-	}
+	d.hand = append(d.hand, c)
 }
 
 func clearTable() {
 	player1.hand = []deck.Card{}
 	dealer.hand = []deck.Card{}
-	dealer.hiddenCard = deck.Card{}
 }
 
 func (p Player) score() (total int) {
@@ -163,14 +157,7 @@ func (p Player) score() (total int) {
 }
 
 func (d Dealer) score() (total int) {
-	for _, c := range d.hand {
-		total += scoreCard(c)
-	}
-	total += scoreCard(d.hiddenCard)
-	if d.hasAce() && total <= 11 {
-		total += 10
-	}
-	return
+	return d.Player.score()
 }
 
 func (p Player) hasAce() bool {
@@ -183,7 +170,7 @@ func (p Player) hasAce() bool {
 }
 
 func (d Dealer) hasAce() bool {
-	return d.Player.hasAce() || d.hiddenCard.Value == deck.Ace
+	return d.Player.hasAce()
 }
 
 func scoreCard(c deck.Card) (score int) {

@@ -53,20 +53,17 @@ func TestScoring(t *testing.T) {
 	})
 
 	t.Run("the dealer can score cards", func(t *testing.T) {
-		dealer.hiddenCard = ace
-		dealer.hand = []deck.Card{king}
+		dealer.hand = []deck.Card{ace, king}
 		assertEquals(dealer.score(), 21)
 	})
 
 	t.Run("the dealer has a low ace card", func(t *testing.T) {
-		dealer.hand = []deck.Card{six, jack}
-		dealer.hiddenCard = ace
+		dealer.hand = []deck.Card{ace, six, jack}
 		assertEquals(dealer.score(), 17)
 	})
 
 	t.Run("the dealer has a high ace card", func(t *testing.T) {
-		dealer.hand = []deck.Card{nine}
-		dealer.hiddenCard = ace
+		dealer.hand = []deck.Card{ace, nine}
 
 		assertEquals(dealer.score(), 20)
 	})
@@ -90,24 +87,21 @@ func TestWinner(t *testing.T) {
 
 	t.Run("player wins", func(t *testing.T) {
 		player1.hand = []deck.Card{nine, queen}
-		dealer.hand = []deck.Card{eight}
-		dealer.hiddenCard = ten
+		dealer.hand = []deck.Card{ten, eight}
 
 		assertWinner("TestPlayer")
 	})
 
 	t.Run("dealer wins", func(t *testing.T) {
 		player1.hand = []deck.Card{nine, ten}
-		dealer.hand = []deck.Card{ten}
-		dealer.hiddenCard = ace
+		dealer.hand = []deck.Card{ace, ten}
 
 		assertWinner("Dealer")
 	})
 
 	t.Run("game is drawn", func(t *testing.T) {
 		player1.hand = []deck.Card{nine, ten}
-		dealer.hand = []deck.Card{ten}
-		dealer.hiddenCard = nine
+		dealer.hand = []deck.Card{nine, ten}
 
 		assertWinner("Draw")
 	})
@@ -155,8 +149,7 @@ func TestDealer(t *testing.T) {
 
 	t.Run("dealer does not go bust on drawing ace with thirteen", func(t *testing.T) {
 		player1.hand = []deck.Card{nine, ten}
-		dealer.hand = []deck.Card{ten}
-		dealer.hiddenCard = three
+		dealer.hand = []deck.Card{three, ten}
 
 		nextCards := deck.Deck([]deck.Card{ace, six})
 		dealer.cards = &nextCards
@@ -179,8 +172,7 @@ func TestDealer(t *testing.T) {
 
 	t.Run("dealer should accept draw if winning is impossible", func(t *testing.T) {
 		player1.hand = []deck.Card{ace, ten}
-		dealer.hand = []deck.Card{six}
-		dealer.hiddenCard = ace
+		dealer.hand = []deck.Card{ace, six}
 
 		nextCards := deck.Deck([]deck.Card{four, five, six})
 		dealer.cards = &nextCards

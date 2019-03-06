@@ -15,38 +15,42 @@ type Participant interface {
 	getName() string
 }
 
-func showHands(showAll bool) {
+// Show the player and dealers hands. The dealer keeps one card
+// hidden until the player has finished their turn.
+func showHands(hideCard bool) {
 	fmt.Print(pageBreak)
-	fmt.Print("You have: ")
-	fmt.Printf("%s (score %d).", showHand(&player1, false), player1.score())
+	fmt.Print("Player1 has: ")
+	fmt.Printf("%s. (score %d)", getPlayerHand(player1), player1.score())
 
 	fmt.Print("\nThe dealer has: ")
-	if showAll {
-		fmt.Printf("%s (score %d).\n", showHand(&dealer, showAll), dealer.score())
-	} else {
-		fmt.Printf("%s.\n", showHand(&dealer, showAll))
+	dealerCards := fmt.Sprintf("%s.", getDealerHand(dealer, hideCard))
+	if !hideCard {
+		dealerCards += fmt.Sprintf(" (score %d)\n", dealer.score())
 	}
+	fmt.Print(dealerCards)
 }
 
-func showHand(p Participant, showAll bool) string {
+func getPlayerHand(p Player) string {
 	arr := []string{}
-
-	switch p.(type) {
-	case *Player:
-		for _, card := range player1.hand {
-			arr = append(arr, card.String())
-		}
-	case *Dealer:
-		for _, card := range dealer.hand {
-			arr = append(arr, card.String())
-		}
-		if showAll {
-			arr = append(arr, dealer.hiddenCard.String())
-		} else {
-			arr = append(arr, "and a card face down")
-		}
+	for _, card := range player1.hand {
+		arr = append(arr, card.String())
 	}
+	return strings.Join(arr, ", ")
+}
 
+func getDealerHand(d Dealer, hideCard bool) string {
+	arr := []string{}
+	cards := d.hand
+
+	if hideCard {
+		cards = cards[:len(cards)-1]
+	}
+	for _, card := range cards {
+		arr = append(arr, card.String())
+	}
+	if hideCard {
+		arr = append(arr, "and a hidden card.\n")
+	}
 	return strings.Join(arr, ", ")
 }
 
@@ -65,7 +69,7 @@ func play(s *Participant) (err error) {
 }
 
 func handleDealer(d *Dealer, playerScore int) error {
-	showHands(true)
+	showHands(false)
 
 	score := d.score()
 	if score > playerScore {
@@ -76,8 +80,8 @@ func handleDealer(d *Dealer, playerScore int) error {
 	for score < playerScore || hasSoft17 {
 		fmt.Print("The dealer hits, ")
 		newCard := d.dealCard()
-		fmt.Printf("and receives %s\n", newCard)
 		d.add(newCard)
+		fmt.Printf("and receives %s. (score %d)\n", newCard, d.score())
 		score = d.score()
 		if isBust(d) {
 			return errors.New("The dealer is bust")
@@ -92,7 +96,7 @@ func handleDealer(d *Dealer, playerScore int) error {
 
 func dealerStands() error {
 	fmt.Println("The dealer stands.")
-	showHands(true)
+	showHands(false)
 	return nil
 }
 
@@ -102,12 +106,12 @@ func handlePlayer(p *Player) error {
 	for giveMe {
 		if playerChoice() == hit {
 			newCard := dealer.dealCard()
-			fmt.Printf("You receive %s\n", newCard)
+			fmt.Printf("You receive %s.\n", newCard)
 			p.add(newCard)
 			if isBust(p) {
 				return fmt.Errorf("%s", p.getName())
 			}
-			showHands(false)
+			showHands(true)
 		} else {
 			giveMe = false
 		}
