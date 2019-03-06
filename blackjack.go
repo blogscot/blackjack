@@ -18,15 +18,15 @@ type Pack interface {
 
 // Player holds a players details
 type Player struct {
-	name  string
-	cards []deck.Card
+	name string
+	hand []deck.Card
 }
 
 // Dealer holds the dealers details
 type Dealer struct {
 	Player
 	hiddenCard deck.Card
-	deal       func() (card deck.Card)
+	cards      *deck.Deck
 }
 
 type choice int
@@ -49,10 +49,9 @@ The dealer shuffles the deck thoroughly.`
 var (
 	reader = bufio.NewReader(os.Stdin)
 
-	dealer       = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
+	dealer       = Dealer{Player: Player{name: "The dealer"}}
 	player1      = Player{name: "Player1"}
 	participants = []Participant{&player1, &dealer}
-	cards        *deck.Deck
 )
 
 // Play plays the game
@@ -60,7 +59,7 @@ func Play(pack Pack) {
 	fmt.Println(letsPlay)
 	pack.Shuffle()
 
-	cards = pack.Cards()
+	dealer.cards = pack.Cards()
 	var text string
 
 	for {
@@ -74,13 +73,13 @@ func Play(pack Pack) {
 			break
 		}
 		fmt.Println()
-		clearCards()
+		clearTable()
 	}
 	fmt.Println("Thanks for playing. Bye!")
 }
 
 func playHand() {
-	dealFirstHand()
+	dealer.dealFirstHand()
 	showHands(false)
 
 	p := Participant(&player1)
@@ -103,23 +102,23 @@ func playHand() {
 	}
 }
 
-func dealFirstHand() {
+func (d Dealer) dealFirstHand() {
 	for n := 1; n <= 2; n++ {
 		for _, p := range participants {
-			c := dealCard()
+			c := d.dealCard()
 			p.add(c)
 		}
 	}
 }
 
-func dealCard() (card deck.Card) {
-	if len(*cards) == 0 {
+func (d Dealer) dealCard() (card deck.Card) {
+	if len(*d.cards) == 0 {
 		fmt.Println("The dealer opens a new deck, and shuffles the cards")
-		*cards = deck.New()
-		cards.Shuffle()
+		*d.cards = deck.New()
+		d.cards.Shuffle()
 	}
-	card = (*cards)[0]
-	*cards = (*cards)[1:]
+	card = (*d.cards)[0]
+	*d.cards = (*d.cards)[1:]
 	return
 }
 
@@ -128,24 +127,25 @@ func (p *Player) getName() string {
 }
 
 func (p *Player) add(c deck.Card) {
-	p.cards = append(p.cards, c)
+	p.hand = append(p.hand, c)
 }
 
 func (d *Dealer) add(c deck.Card) {
 	if d.hiddenCard == (deck.Card{}) {
 		d.hiddenCard = c
 	} else {
-		d.cards = append(d.cards, c)
+		d.hand = append(d.hand, c)
 	}
 }
 
-func clearCards() {
-	player1 = Player{name: "Player1"}
-	dealer = Dealer{Player: Player{name: "The dealer"}, deal: dealCard}
+func clearTable() {
+	player1.hand = []deck.Card{}
+	dealer.hand = []deck.Card{}
+	dealer.hiddenCard = deck.Card{}
 }
 
 func (p Player) score() (total int) {
-	for _, c := range p.cards {
+	for _, c := range p.hand {
 		total += scoreCard(c)
 	}
 	if p.hasAce() && total <= 11 {
@@ -155,7 +155,7 @@ func (p Player) score() (total int) {
 }
 
 func (d Dealer) score() (total int) {
-	for _, c := range d.cards {
+	for _, c := range d.hand {
 		total += scoreCard(c)
 	}
 	total += scoreCard(d.hiddenCard)
@@ -166,7 +166,7 @@ func (d Dealer) score() (total int) {
 }
 
 func (p Player) hasAce() bool {
-	for _, c := range p.cards {
+	for _, c := range p.hand {
 		if c.Value == deck.Ace {
 			return true
 		}

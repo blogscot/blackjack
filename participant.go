@@ -9,7 +9,6 @@ import (
 	deck "github.com/blogscot/card-deck"
 )
 
-// Participant ...
 type Participant interface {
 	score() int
 	add(c deck.Card)
@@ -34,11 +33,11 @@ func showHand(p Participant, showAll bool) string {
 
 	switch p.(type) {
 	case *Player:
-		for _, card := range player1.cards {
+		for _, card := range player1.hand {
 			arr = append(arr, card.String())
 		}
 	case *Dealer:
-		for _, card := range dealer.cards {
+		for _, card := range dealer.hand {
 			arr = append(arr, card.String())
 		}
 		if showAll {
@@ -76,7 +75,7 @@ func handleDealer(d *Dealer, playerScore int) error {
 	hasSoft17 := score == 17 && d.hasAce()
 	for score < playerScore || hasSoft17 {
 		fmt.Print("The dealer hits, ")
-		newCard := d.deal()
+		newCard := d.dealCard()
 		fmt.Printf("and receives %s\n", newCard)
 		d.add(newCard)
 		score = d.score()
@@ -102,7 +101,7 @@ func handlePlayer(p *Player) error {
 
 	for giveMe {
 		if playerChoice() == hit {
-			newCard := dealer.deal()
+			newCard := dealer.dealCard()
 			fmt.Printf("You receive %s\n", newCard)
 			p.add(newCard)
 			if isBust(p) {
