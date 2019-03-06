@@ -135,10 +135,29 @@ func TestPlayerInput(t *testing.T) {
 	})
 }
 
-func TestDealer(t *testing.T) {
+func TestParticipants(t *testing.T) {
 
 	player1 = Player{name: "TestPlayer"}
 	dealer = Dealer{Player: Player{name: "Dealer"}}
+
+	t.Run("the game aborts if a player goes bust", func(t *testing.T) {
+		player1.hand = []deck.Card{jack, four}
+		dealer.hand = []deck.Card{ace, six}
+
+		nextCards := deck.Deck([]deck.Card{king, five, six})
+		dealer.cards = &nextCards
+
+		// Player hits
+		sr := strings.NewReader("h\n")
+		reader = bufio.NewReader(sr)
+
+		err := handlePlayer(&player1)
+		want := "TestPlayer"
+
+		if err.Error() != want {
+			t.Errorf("got %s, want %s", err.Error(), want)
+		}
+	})
 
 	t.Run("dealer does not go bust on drawing ace with thirteen", func(t *testing.T) {
 		player1.hand = []deck.Card{nine, ten}
@@ -181,6 +200,7 @@ func TestDealer(t *testing.T) {
 
 		assertEquals(t, dealer.score(), want)
 	})
+
 }
 
 type testingDeck struct {
