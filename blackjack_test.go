@@ -29,43 +29,46 @@ func TestScoring(t *testing.T) {
 	player1 := Player{name: "TestPlayer"}
 	dealer := Dealer{Player: Player{name: "Dealer"}}
 
-	assertEquals := func(got, wanted int) {
+	assertEquals := func(got, want int) {
 		t.Helper()
 
-		if got != wanted {
-			t.Errorf("got %d, wanted %d", got, wanted)
+		if got != want {
+			t.Errorf("got %d, want %d", got, want)
 		}
 	}
 
-	t.Run("a player can score cards", func(t *testing.T) {
-		player1.hand = []deck.Card{four, ten}
-		assertEquals(player1.score(), 14)
+	t.Run("player scoring", func(t *testing.T) {
+		var playerTests = []struct {
+			title string
+			cards deck.Deck
+			score int
+		}{
+			{"a player can score cards", []deck.Card{four, ten}, 14},
+			{"a player has a low ace card", []deck.Card{six, ten, ace}, 17},
+			{"a player has a high ace card", []deck.Card{ten, ace}, 21},
+		}
+
+		for _, tt := range playerTests {
+			player1.hand = tt.cards
+			assertEquals(player1.score(), tt.score)
+		}
 	})
 
-	t.Run("a player has a low ace card", func(t *testing.T) {
-		player1.hand = []deck.Card{six, ten, ace}
-		assertEquals(player1.score(), 17)
-	})
+	t.Run("dealer scoring", func(t *testing.T) {
+		var dealerTests = []struct {
+			title string
+			cards deck.Deck
+			score int
+		}{
+			{"the dealer can score cards", []deck.Card{ace, king}, 21},
+			{"the dealer has a low ace card", []deck.Card{ace, six, jack}, 17},
+			{"the dealer has a high ace card", []deck.Card{ace, nine}, 20},
+		}
 
-	t.Run("a player has a high ace card", func(t *testing.T) {
-		player1.hand = []deck.Card{ace, ten}
-		assertEquals(player1.score(), 21)
-	})
-
-	t.Run("the dealer can score cards", func(t *testing.T) {
-		dealer.hand = []deck.Card{ace, king}
-		assertEquals(dealer.score(), 21)
-	})
-
-	t.Run("the dealer has a low ace card", func(t *testing.T) {
-		dealer.hand = []deck.Card{ace, six, jack}
-		assertEquals(dealer.score(), 17)
-	})
-
-	t.Run("the dealer has a high ace card", func(t *testing.T) {
-		dealer.hand = []deck.Card{ace, nine}
-
-		assertEquals(dealer.score(), 20)
+		for _, tt := range dealerTests {
+			dealer.hand = tt.cards
+			assertEquals(dealer.score(), tt.score)
+		}
 	})
 }
 
