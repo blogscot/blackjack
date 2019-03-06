@@ -56,26 +56,34 @@ var (
 
 // Play plays the game
 func Play(pack Pack) {
-	fmt.Println(letsPlay)
 	pack.Shuffle()
+	gameIntro()
 
 	dealer.cards = pack.Cards()
-	var text string
 
 	for {
 		fmt.Println(dealNewHand)
 		playHand()
 
-		fmt.Print("\nPlay again? (Y/n)? ")
-		text, _ = reader.ReadString('\n')
-		text = strings.TrimRight(strings.ToLower(text), "\n")
-		if text == "n" {
+		if playAgain() == "n" {
 			break
 		}
+
 		fmt.Println()
 		clearTable()
 	}
 	fmt.Println("Thanks for playing. Bye!")
+}
+
+func gameIntro() {
+	fmt.Println(letsPlay)
+}
+
+func playAgain() (text string) {
+	fmt.Print("\nPlay again? (Y/n)? ")
+	text, _ = reader.ReadString('\n')
+	text = strings.TrimRight(strings.ToLower(text), "\n")
+	return
 }
 
 func playHand() {
