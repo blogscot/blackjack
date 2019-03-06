@@ -2,6 +2,7 @@ package blackjack
 
 import (
 	"bufio"
+	"os"
 	"strings"
 	"testing"
 
@@ -101,6 +102,7 @@ func TestWinner(t *testing.T) {
 }
 
 func TestPlayerInput(t *testing.T) {
+	turnOffStdoutDuringTesting()
 
 	assertChoice := func(want choice) {
 		t.Helper()
@@ -257,4 +259,8 @@ func assertEquals(t *testing.T, got, want int) {
 	if got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
+}
+
+func turnOffStdoutDuringTesting() {
+	os.Stdout = nil
 }
