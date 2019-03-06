@@ -103,9 +103,9 @@ func playHand() {
 
 	winner := decideWinner(participants)
 	if winner == gameIsDrawn {
-		fmt.Printf("\nThe game is a draw!")
+		fmt.Printf("\nThe game is a DRAW!")
 	} else {
-		fmt.Printf("\n%s wins!\n", winner)
+		fmt.Printf("\n%s WINS!\n", winner)
 	}
 }
 
@@ -182,24 +182,22 @@ func scoreCard(c deck.Card) (score int) {
 }
 
 func playerChoice() choice {
-	var (
-		text    string
-		isValid = false
-	)
+	var text string
 
-	for !isValid {
+	for {
 		fmt.Print(pageBreak)
 		fmt.Print("Do you want to (H)it or (S)tand? ")
+
 		text, _ = reader.ReadString('\n')
 		text = strings.TrimRight(strings.ToLower(text), "\n")
-		if text == "h" || text == "s" {
-			isValid = true
+
+		switch text {
+		case "h":
+			return hit
+		case "s":
+			return stand
 		}
 	}
-	if text == "h" {
-		return hit
-	}
-	return stand
 }
 
 // Standard wraps the deck to facilitate testing
