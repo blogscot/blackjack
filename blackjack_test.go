@@ -88,26 +88,24 @@ func TestWinner(t *testing.T) {
 		}
 	}
 
-	t.Run("player wins", func(t *testing.T) {
-		player1.hand = []deck.Card{nine, queen}
-		dealer.hand = []deck.Card{ten, eight}
+	var winnerTests = []struct {
+		title       string
+		playerCards deck.Deck
+		dealerCards deck.Deck
+		winner      string
+	}{
+		{"player wins by 1", []deck.Card{nine, queen}, []deck.Card{ten, eight}, "TestPlayer"},
+		{"dealer wins by 2", []deck.Card{nine, ten}, []deck.Card{ace, ten}, "Dealer"},
+		{"game is drawn 1", []deck.Card{nine, ten}, []deck.Card{nine, ten}, gameIsDrawn},
+		{"game is drawn 2", []deck.Card{five, ten, four}, []deck.Card{nine, ten}, gameIsDrawn},
+	}
 
-		assertWinner("TestPlayer")
-	})
+	for _, tt := range winnerTests {
+		player1.hand = tt.playerCards
+		dealer.hand = tt.dealerCards
 
-	t.Run("dealer wins", func(t *testing.T) {
-		player1.hand = []deck.Card{nine, ten}
-		dealer.hand = []deck.Card{ace, ten}
-
-		assertWinner("Dealer")
-	})
-
-	t.Run("game is drawn", func(t *testing.T) {
-		player1.hand = []deck.Card{nine, ten}
-		dealer.hand = []deck.Card{nine, ten}
-
-		assertWinner("Draw")
-	})
+		assertWinner(tt.winner)
+	}
 }
 
 func TestPlayerInput(t *testing.T) {

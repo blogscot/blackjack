@@ -119,6 +119,8 @@ func handlePlayer(p *Player) error {
 	return nil
 }
 
+// decideWinner find the winning player.
+// It assumes that players haven't gone bust already.
 func decideWinner(s []Participant) string {
 	sort.Slice(s, func(i, j int) bool {
 		return s[i].score() > s[j].score()
