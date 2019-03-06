@@ -29,14 +29,6 @@ func TestScoring(t *testing.T) {
 	player1 := Player{name: "TestPlayer"}
 	dealer := Dealer{Player: Player{name: "Dealer"}}
 
-	assertEquals := func(got, want int) {
-		t.Helper()
-
-		if got != want {
-			t.Errorf("got %d, want %d", got, want)
-		}
-	}
-
 	t.Run("player scoring", func(t *testing.T) {
 		var playerTests = []struct {
 			title string
@@ -50,7 +42,7 @@ func TestScoring(t *testing.T) {
 
 		for _, tt := range playerTests {
 			player1.hand = tt.cards
-			assertEquals(player1.score(), tt.score)
+			assertEquals(t, player1.score(), tt.score)
 		}
 	})
 
@@ -67,7 +59,7 @@ func TestScoring(t *testing.T) {
 
 		for _, tt := range dealerTests {
 			dealer.hand = tt.cards
-			assertEquals(dealer.score(), tt.score)
+			assertEquals(t, dealer.score(), tt.score)
 		}
 	})
 }
@@ -77,14 +69,14 @@ func TestWinner(t *testing.T) {
 	player1 := Player{name: "TestPlayer"}
 	dealer := Dealer{Player: Player{name: "Dealer"}}
 
-	assertWinner := func(wanted string) {
+	assertWinner := func(want string) {
 		t.Helper()
 
 		game := []Participant{&player1, &dealer}
 		got := decideWinner(game)
 
-		if got != wanted {
-			t.Errorf("got %s, wanted %s", got, wanted)
+		if got != want {
+			t.Errorf("got %s, want %s", got, want)
 		}
 	}
 
@@ -115,7 +107,7 @@ func TestPlayerInput(t *testing.T) {
 		got := playerChoice()
 
 		if got != want {
-			t.Errorf("got %q, wanted %q", got, want)
+			t.Errorf("got %q, want %q", got, want)
 		}
 	}
 
@@ -163,12 +155,11 @@ func TestDealer(t *testing.T) {
 		for _, p := range ps {
 			_ = play(&p)
 		}
-		wanted := 20
-		got := dealer.score()
 
-		if got != wanted {
-			t.Errorf("got %d, wanted %d", got, wanted)
-		}
+		want := 20
+
+		assertEquals(t, dealer.score(), want)
+
 	})
 
 	t.Run("dealer should accept draw if winning is impossible", func(t *testing.T) {
@@ -186,12 +177,9 @@ func TestDealer(t *testing.T) {
 		for _, p := range ps {
 			_ = play(&p)
 		}
-		wanted := 21
-		got := dealer.score()
+		want := 21
 
-		if got != wanted {
-			t.Errorf("got %d, wanted %d", got, wanted)
-		}
+		assertEquals(t, dealer.score(), want)
 	})
 }
 
@@ -214,14 +202,6 @@ func TestGame(t *testing.T) {
 		dealer = Dealer{Player: Player{name: "Dealer"}}
 	}
 
-	assertEquals := func(got, wanted int) {
-		t.Helper()
-
-		if got != wanted {
-			t.Errorf("got %d, wanted %d", got, wanted)
-		}
-	}
-
 	t.Run("Player hits and goes bust", func(t *testing.T) {
 		initTest()
 		cards := deck.Deck{ten, three, two, five, ten, eight}
@@ -232,8 +212,8 @@ func TestGame(t *testing.T) {
 
 		Play(&testingDeck{cards})
 
-		assertEquals(player1.score(), 22)
-		assertEquals(dealer.score(), 8)
+		assertEquals(t, player1.score(), 22)
+		assertEquals(t, dealer.score(), 8)
 	})
 
 	t.Run("Player wins with blackjack", func(t *testing.T) {
@@ -246,7 +226,15 @@ func TestGame(t *testing.T) {
 
 		Play(&testingDeck{cards})
 
-		assertEquals(player1.score(), 21)
-		assertEquals(dealer.score(), 23)
+		assertEquals(t, player1.score(), 21)
+		assertEquals(t, dealer.score(), 23)
 	})
+}
+
+func assertEquals(t *testing.T, got, want int) {
+	t.Helper()
+
+	if got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
 }
