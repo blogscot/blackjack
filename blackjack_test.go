@@ -146,7 +146,7 @@ func TestParticipants(t *testing.T) {
 		player1.hand = []deck.Card{jack, four}
 		dealer.hand = []deck.Card{ace, six}
 
-		nextCards := deck.Deck([]deck.Card{king, five, six})
+		nextCards := deck.Deck([]deck.Card{king})
 		dealer.cards = &nextCards
 
 		// Player hits
@@ -187,7 +187,7 @@ func TestParticipants(t *testing.T) {
 		player1.hand = []deck.Card{ace, ten}
 		dealer.hand = []deck.Card{ace, six}
 
-		nextCards := deck.Deck([]deck.Card{four, five, six})
+		nextCards := deck.Deck([]deck.Card{four})
 		dealer.cards = &nextCards
 
 		// Player stands
@@ -226,7 +226,7 @@ func TestGame(t *testing.T) {
 
 	t.Run("Player hits and goes bust", func(t *testing.T) {
 		initTest()
-		cards := deck.Deck{ten, three, two, five, ten, eight}
+		cards := deck.Deck{ten, three, two, five, ten}
 
 		// Player hits and quits game
 		sr := strings.NewReader("h\nn\n")
